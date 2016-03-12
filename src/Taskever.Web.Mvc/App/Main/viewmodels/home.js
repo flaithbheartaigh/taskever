@@ -16,10 +16,12 @@
 
         that.loadActivities = function () {
             userActivityService.getFollowedActivities({
+                isActor: true,
                 userId: session.getCurrentUser().id(),
                 beforeId: _minShownActivityId,
                 maxResultCount: _maxResultCountOnce,
             }).done(function (data) {
+                // debugger;
                 if (data.activities.length > 0) {
                     _minShownActivityId = _.last(data.activities).id;
                 }

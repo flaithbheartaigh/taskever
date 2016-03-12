@@ -43,6 +43,7 @@
             // Private methods ///////////////////////////////////////////////////
             
             var loadData = function () {
+                // debugger;
                 taskService.getTasks({
                     assignedUserId: _activationData.assignedUserId,
                     taskStates: _activationData.taskStates,

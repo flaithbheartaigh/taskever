@@ -1,22 +1,27 @@
 ﻿using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Abp.Modules.Core.Mvc.Models;
-using Abp.Runtime.Security;
-using Abp.Security.IdentityFramework;
-using Abp.Security.Users;
-using Abp.UI;
-using Abp.Users.Dto;
-using Abp.Web.Mvc.Authorization;
-using Abp.Web.Mvc.Models;
+
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+
+using Abp.Auditing;
+using Abp.Authorization;
+using Abp.Authorization.Users;
+using Abp.Modules.Core.Mvc.Models;
+using Abp.UI;
+using Abp.Users.Dto;
+using Abp.Web.Models;
+using Abp.Web.Mvc.Models;
+
 using Recaptcha.Web;
 using Recaptcha.Web.Mvc;
+
+using Taskever.Security.Users;
 using Taskever.Users;
 using Taskever.Web.Mvc.Models.Account;
+
 
 namespace Taskever.Web.Mvc.Controllers
 {
@@ -24,7 +29,7 @@ namespace Taskever.Web.Mvc.Controllers
     {
         private readonly ITaskeverUserAppService _userAppService;
 
-        private readonly AbpUserManager _userManager;
+        private readonly UserManager _userManager;
 
         private IAuthenticationManager AuthenticationManager
         {
@@ -34,7 +39,7 @@ namespace Taskever.Web.Mvc.Controllers
             }
         }
 
-        public AccountController(ITaskeverUserAppService userAppService, AbpUserManager userManager)
+        public AccountController(ITaskeverUserAppService userAppService, UserManager userManager)
         {
             _userAppService = userAppService;
             _userManager = userManager;
@@ -60,13 +65,18 @@ namespace Taskever.Web.Mvc.Controllers
                 throw new UserFriendlyException("Your form is invalid!");
             }
 
-            var user = await _userManager.FindAsync(loginModel.EmailAddress, loginModel.Password);
-            if (user == null)
+            var result = await _userManager.LoginAsync(loginModel.EmailAddress, loginModel.Password);
+
+            if (result.Result != AbpLoginResultType.Success)
             {
-                throw new UserFriendlyException("Invalid user name or password!");
+                // ErrorInfo error = CreateErrorInfoForFailedLoginAttempt(result.Result, loginModel.EmailAddress);
+                throw CreateExceptionForFailedLoginAttempt(result.Result, loginModel.EmailAddress);
+
+                // throw new UserFriendlyException("Invalid user name or password!");
+                // return Json(new MvcAjaxResponse { Error = error });
             }
 
-            await SignInAsync(user, loginModel.RememberMe);
+            await SignInAsync(result.User, loginModel.RememberMe);
 
             if (string.IsNullOrWhiteSpace(returnUrl))
             {
@@ -76,11 +86,69 @@ namespace Taskever.Web.Mvc.Controllers
             return Json(new MvcAjaxResponse { TargetUrl = returnUrl });
         }
 
-        private async Task SignInAsync(AbpUser user, bool isPersistent)
+        private ErrorInfo CreateErrorInfoForFailedLoginAttempt(AbpLoginResultType result, string usernameOrEmailAddress)
+        {
+            ErrorInfo info = new ErrorInfo(500);
+            
+            switch (result)
+            {
+                case AbpLoginResultType.Success:
+                    throw new ApplicationException("Don't call this method with a success result!");
+                case AbpLoginResultType.InvalidUserNameOrEmailAddress:
+                case AbpLoginResultType.InvalidPassword:
+                    info.Message = L("LoginFailed");
+                    info.Details = L("InvalidUserNameOrPassword");
+                    break;
+
+                case AbpLoginResultType.UserIsNotActive:
+                    info.Message = L("LoginFailed");
+                    info.Details = L("UserIsNotActiveAndCanNotLogin", usernameOrEmailAddress);
+                    break;
+
+                case AbpLoginResultType.UserEmailIsNotConfirmed:
+                    info.Message = L("LoginFailed");
+                    info.Details = "Your email address is not confirmed. You can not login";
+                    break;
+                    
+                default: //Can not fall to default actually. But other result types can be added in the future and we may forget to handle it
+                    Logger.Warn("Unhandled login fail reason: " + result);
+                    
+                    info.Message = L("LoginFailed");
+                    info.Details = "Unhandled login fail reason: " + result;
+                    break;
+            }
+
+            return info;
+        }
+
+        private Exception CreateExceptionForFailedLoginAttempt(AbpLoginResultType result, string usernameOrEmailAddress)
+        {
+            switch (result)
+            {
+                case AbpLoginResultType.Success:
+                    return new ApplicationException("Don't call this method with a success result!");
+                
+                case AbpLoginResultType.InvalidUserNameOrEmailAddress:
+                case AbpLoginResultType.InvalidPassword:
+                    return new UserFriendlyException(L("LoginFailed"), L("InvalidUserNameOrPassword"));
+
+                case AbpLoginResultType.UserIsNotActive:
+                    return new UserFriendlyException(L("LoginFailed"), L("UserIsNotActiveAndCanNotLogin", usernameOrEmailAddress));
+                
+                case AbpLoginResultType.UserEmailIsNotConfirmed:
+                    return new UserFriendlyException(L("LoginFailed"), "Your email address is not confirmed. You can not login"); //TODO: localize message
+                
+                default: //Can not fall to default actually. But other result types can be added in the future and we may forget to handle it
+                    Logger.Warn("Unhandled login fail reason: " + result);
+                    return new UserFriendlyException(L("LoginFailed"));
+            }
+        }
+
+
+        private async Task SignInAsync(TaskeverUser user, bool isPersistent)
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
             var identity = await _userManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
-            identity.AddClaim(new Claim(AbpClaimTypes.TenantId, "42"));
             AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, identity);
         }
 
@@ -113,6 +181,7 @@ namespace Taskever.Web.Mvc.Controllers
                 throw new UserFriendlyException("Your form is invalid!");
             }
 
+            //TODO: Remove Recapthcha for testing??
             var recaptchaHelper = this.GetRecaptchaVerificationHelper();
             if (String.IsNullOrEmpty(recaptchaHelper.Response))
             {
@@ -165,7 +234,7 @@ namespace Taskever.Web.Mvc.Controllers
             return Json(new MvcAjaxResponse { TargetUrl = Url.Action("Login") });
         }
 
-        [Authorize]
+        [Authorize, DisableAuditing]
         public JsonResult KeepSessionOpen()
         {
             return Json(new MvcAjaxResponse());

@@ -14,6 +14,7 @@
             // Public methods /////////////////////////////////////////////////////
 
             that.canActivate = function (taskId) {
+                // debugger;
                 return taskService.getTask({
                     id: taskId
                 }).done(function (data) {

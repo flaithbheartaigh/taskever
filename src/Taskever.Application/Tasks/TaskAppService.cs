@@ -1,13 +1,16 @@
 using System;
 using System.Linq;
+
 using Abp.Application.Services;
-using Abp.Domain.Uow;
+using Abp.Authorization;
+using Abp.Collections.Extensions;
+using Abp.Domain.Repositories;
 using Abp.Events.Bus;
 using Abp.Events.Bus.Entities;
 using Abp.Mapping;
-using Abp.Security.Users;
 using Abp.UI;
-using Abp.Utils.Extensions.Collections;
+
+using Taskever.Authorization;
 using Taskever.Security.Users;
 using Taskever.Tasks.Dto;
 using Taskever.Tasks.Events;
@@ -17,14 +20,14 @@ namespace Taskever.Tasks
     public class TaskAppService : ApplicationService, ITaskAppService
     {
         private readonly ITaskPolicy _taskPolicy;
-        private readonly ITaskRepository _taskRepository;
-        private readonly ITaskeverUserRepository _userRepository;
+        private readonly IRepository<Task, int> _taskRepository;
+        private readonly IRepository<TaskeverUser, long> _userRepository;
         private readonly IEventBus _eventBus;
 
         public TaskAppService(
             ITaskPolicy taskPolicy,
-            ITaskRepository taskRepository,
-            ITaskeverUserRepository userRepository,
+            IRepository<Task, int> taskRepository,
+            IRepository<TaskeverUser, long> userRepository,
             IEventBus eventBus)
         {
             _taskRepository = taskRepository;
@@ -35,12 +38,12 @@ namespace Taskever.Tasks
 
         public GetTaskOutput GetTask(GetTaskInput input)
         {
-            var currentUser = _userRepository.Load(AbpUser.CurrentUserId.Value);
+            var currentUser = _userRepository.Load(TaskeverUser.CurrentUserId.Value);
             var task = _taskRepository.FirstOrDefault(input.Id);
 
             if (task == null)
             {
-                throw new UserFriendlyException("Can not found the task!");
+                throw new UserFriendlyException(String.Format("Can not find Task with ID: {0}",input.Id));
             }
 
             if (!_taskPolicy.CanSeeTasksOfUser(currentUser, task.AssignedUser))
@@ -95,12 +98,15 @@ namespace Taskever.Tasks
             };
         }
 
-        //[AbpAuthorize(TaskeverPermissions.CreateTask)]
+        [AbpAuthorize(TaskeverPermissions.CreateTask)]
         public virtual CreateTaskOutput CreateTask(CreateTaskInput input)
         {
+            if (System.Diagnostics.Debugger.IsAttached)
+                System.Diagnostics.Debugger.Break();
+
             //Get entities from database
-            var creatorUser = _userRepository.Get(AbpUser.CurrentUserId.Value);
-            var assignedUser = _userRepository.Get(input.Task.AssignedUserId);
+            var creatorUser = _userRepository.Load(AbpSession.UserId.Value); // was TaskeverUser.CurrentUserId.Value
+            var assignedUser = _userRepository.Load(input.Task.AssignedUserId);
 
             if (!_taskPolicy.CanAssignTask(creatorUser, assignedUser))
             {
@@ -111,7 +117,45 @@ namespace Taskever.Tasks
             var taskEntity = input.Task.MapTo<Task>();
 
             taskEntity.CreatorUserId = creatorUser.Id;
-            taskEntity.AssignedUser = _userRepository.Load(input.Task.AssignedUserId);
+            taskEntity.AssignedUserId = assignedUser.Id;// _userRepository.Load(input.Task.AssignedUserId);
+            taskEntity.State = TaskState.New;
+
+            if (taskEntity.AssignedUserId != creatorUser.Id && taskEntity.Privacy == TaskPrivacy.Private)
+            {
+                throw new ApplicationException("A user can not assign a private task to another user!");
+            }
+
+            int id = _taskRepository.InsertAndGetId(taskEntity);
+            Task result = _taskRepository.Get(id);
+
+            Logger.Debug("Created " + taskEntity);
+            Logger.Debug("Result " + result);
+
+            // TODO: check
+            _eventBus.Trigger(this, new EntityCreatedEventData<Task>(result));
+                
+            return new CreateTaskOutput
+                       {
+                           Task = result.MapTo<TaskDto>()
+                       };
+        }
+
+        public async System.Threading.Tasks.Task<CreateTaskOutput> CreateTaskAsync(CreateTaskInput input)
+        {
+            //Get entities from database
+            var creatorUser = await _userRepository.GetAsync(AbpSession.UserId.Value); // was TaskeverUser.CurrentUserId.Value
+            var assignedUser = await _userRepository.GetAsync(input.Task.AssignedUserId);
+
+            if (!_taskPolicy.CanAssignTask(creatorUser, assignedUser))
+            {
+                throw new UserFriendlyException("You can not assign task to this user!");
+            }
+
+            //Create the task
+            var taskEntity = input.Task.MapTo<Task>();
+
+            taskEntity.CreatorUserId = creatorUser.Id;
+            taskEntity.AssignedUser = assignedUser;// _userRepository.Load(input.Task.AssignedUserId);
             taskEntity.State = TaskState.New;
 
             if (taskEntity.AssignedUser.Id != creatorUser.Id && taskEntity.Privacy == TaskPrivacy.Private)
@@ -119,16 +163,18 @@ namespace Taskever.Tasks
                 throw new ApplicationException("A user can not assign a private task to another user!");
             }
 
-            _taskRepository.Insert(taskEntity);
+            //TODO: Check, this may have an id issue, load seperately to resolve
+            await _taskRepository.InsertAsync(taskEntity);
 
-            Logger.Debug("Creaded " + taskEntity);
+            Logger.Debug("Created " + taskEntity);
 
-            _eventBus.TriggerUow(this, new EntityCreatedEventData<Task>(taskEntity));
+            //TODO: Reimplement
+            _eventBus.Trigger(this, new EntityCreatedEventData<Task>(taskEntity));
 
             return new CreateTaskOutput
-                       {
-                           Task = taskEntity.MapTo<TaskDto>()
-                       };
+            {
+                Task = taskEntity.MapTo<TaskDto>()
+            };
         }
 
         public void UpdateTask(UpdateTaskInput input)
@@ -139,7 +185,7 @@ namespace Taskever.Tasks
                 throw new Exception("Can not found the task!");
             }
 
-            var currentUser = _userRepository.Load(AbpUser.CurrentUserId.Value); //TODO: Add method LoadCurrentUser and GetCurrentUser ???
+            var currentUser = _userRepository.Load(TaskeverUser.CurrentUserId.Value); //TODO: Add method LoadCurrentUser and GetCurrentUser ???
             if (!_taskPolicy.CanUpdateTask(currentUser, task))
             {
                 throw new UserFriendlyException("You can not update this task!");
@@ -160,7 +206,6 @@ namespace Taskever.Tasks
             var oldTaskState = task.State;
 
             //TODO: Can we use Auto mapper?
-
             task.Description = input.Description;
             task.Priority = (TaskPriority)input.Priority;
             task.State = (TaskState)input.State;
@@ -169,7 +214,8 @@ namespace Taskever.Tasks
 
             if (oldTaskState != TaskState.Completed && task.State == TaskState.Completed)
             {
-                _eventBus.TriggerUow(this, new TaskCompletedEventData(task));
+                // TODO: Reimplement
+                _eventBus.Trigger(this, new TaskCompletedEventData(task));
             }
         }
 
@@ -181,7 +227,7 @@ namespace Taskever.Tasks
                 throw new Exception("Can not found the task!");
             }
 
-            var currentUser = _userRepository.Load(AbpUser.CurrentUserId.Value);
+            var currentUser = _userRepository.Load(TaskeverUser.CurrentUserId.Value);
             if (!_taskPolicy.CanDeleteTask(currentUser, task))
             {
                 throw new UserFriendlyException("You can not delete this task!");
@@ -194,7 +240,7 @@ namespace Taskever.Tasks
 
         private IQueryable<Task> CreateQueryForAssignedTasksOfUser(long assignedUserId)
         {
-            var currentUser = _userRepository.Load(AbpUser.CurrentUserId.Value);
+            var currentUser = _userRepository.Load(TaskeverUser.CurrentUserId.Value);
             var userOfTasks = _userRepository.Load(assignedUserId);
 
             if (!_taskPolicy.CanSeeTasksOfUser(currentUser, userOfTasks))

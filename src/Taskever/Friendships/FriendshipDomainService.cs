@@ -1,5 +1,6 @@
 using System.Linq;
-using Abp.Security.Users;
+using Abp.Authorization.Users;
+using Taskever.Security.Users;
 
 namespace Taskever.Friendships
 {
@@ -12,7 +13,7 @@ namespace Taskever.Friendships
             _friendshipRepository = friendshipRepository;
         }
 
-        public bool HasFriendship(AbpUser user, AbpUser probableFriend)
+        public bool HasFriendship(TaskeverUser user, TaskeverUser probableFriend)
         {
             return _friendshipRepository.Query( //TODO: Create Index: UserId, FriendId, Status
                q => q.Any(friendship =>

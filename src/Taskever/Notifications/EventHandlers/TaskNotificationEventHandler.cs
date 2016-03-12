@@ -1,4 +1,5 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Repositories;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Taskever.Notifications.Tasks;
@@ -15,9 +16,9 @@ namespace Taskever.Notifications.EventHandlers
     {
         private readonly INotificationService _notificationService;
 
-        private readonly ITaskeverUserRepository _userRepository;
+        private readonly IRepository<TaskeverUser, long> _userRepository;
         
-        public TaskNotificationEventHandler(INotificationService notificationService, ITaskeverUserRepository userRepository)
+        public TaskNotificationEventHandler(INotificationService notificationService, IRepository<TaskeverUser, long> userRepository)
         {
             _notificationService = notificationService;
             _userRepository = userRepository;

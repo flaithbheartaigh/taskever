@@ -1,27 +1,30 @@
+using System.Reflection;
+
 using Abp.Modules;
-using Abp.Startup;
+using Abp.WebApi;
 using Abp.WebApi.Controllers.Dynamic.Builders;
+
 using Taskever.Activities;
 using Taskever.Friendships;
+using Taskever.Startup;
 using Taskever.Tasks;
 using Taskever.Users;
-using Taskever.Web.Dependency.Installers;
 
 namespace Taskever.Web.Startup
 {
+    [DependsOn(typeof(AbpWebApiModule), typeof(TaskeverAppModule))]
     public class TaskeverWebApiModule : AbpModule
     {
-        public override void Initialize(IAbpInitializationContext initializationContext)
+        public override void Initialize()
         {
-            base.Initialize(initializationContext);
-            initializationContext.IocContainer.Install(new TaskeverWebInstaller());
+            IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
+
             CreateWebApiProxiesForServices();
         }
 
         private static void CreateWebApiProxiesForServices()
         {
             //TODO: must be able to exclude/include all methods option
-
             DynamicApiControllerBuilder
                 .For<ITaskeverUserAppService>("taskever/user")
                 .Build();

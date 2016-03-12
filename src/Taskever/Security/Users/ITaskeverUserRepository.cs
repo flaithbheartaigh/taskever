@@ -1,9 +1,9 @@
 ﻿using Abp.Domain.Repositories;
-using Abp.Security.Users;
+using Abp.Authorization.Users;
 
 namespace Taskever.Security.Users
 {
-    public interface ITaskeverUserRepository : IRepository<TaskeverUser, long>
+    public interface ITaskeverUserRepository: IRepository<TaskeverUser, long>
     {
 
     }

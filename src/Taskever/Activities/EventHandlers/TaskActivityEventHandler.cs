@@ -1,4 +1,5 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Repositories;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Taskever.Security.Users;
@@ -13,9 +14,9 @@ namespace Taskever.Activities.EventHandlers
         ITransientDependency
     {
         private readonly IActivityService _activityService;
-        private readonly ITaskeverUserRepository _userRepository;
+        private readonly IRepository<TaskeverUser, long> _userRepository;
 
-        public TaskActivityEventHandler(IActivityService activityService, ITaskeverUserRepository userRepository)
+        public TaskActivityEventHandler(IActivityService activityService, IRepository<TaskeverUser, long> userRepository)
         {
             _activityService = activityService;
             _userRepository = userRepository;
@@ -25,28 +26,21 @@ namespace Taskever.Activities.EventHandlers
         {
             var activity = new CreateTaskActivity
                            {
-                               CreatorUser =
-                                   eventData.Entity.CreatorUserId.HasValue
-                                       ? _userRepository.Load(eventData.Entity.CreatorUserId.Value)
-                                       : null,
-                               AssignedUser = eventData.Entity.AssignedUser,
-                               Task = eventData.Entity
+                               CreatorUserId = eventData.Entity.CreatorUserId.Value,
+                               AssignedUserId = eventData.Entity.AssignedUserId.Value,
+                               TaskId = eventData.Entity.Id
                            };
-
-
-            //activity.AssignedUserId = activity.AssignedUser.Id;
-            //activity.CreatorUserId = activity.CreatorUser.Id;
-            //activity.TaskId = activity.Task.Id;
 
             _activityService.AddActivity(activity);
         }
+
         public void HandleEvent(TaskCompletedEventData eventData)
         {
             _activityService.AddActivity(
                     new CompleteTaskActivity
                     {
-                        AssignedUser = eventData.Entity.AssignedUser,
-                        Task = eventData.Entity
+                        AssignedUserId = eventData.Entity.AssignedUserId.Value,
+                        TaskId = eventData.Entity.Id
                     });
         }
     }

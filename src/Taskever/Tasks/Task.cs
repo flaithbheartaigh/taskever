@@ -7,6 +7,7 @@ namespace Taskever.Tasks
     /// <summary>
     /// Represents a task.
     /// </summary>
+    [Table("AppTasks")]
     public class Task : AuditedEntity
     {
         /// <summary>

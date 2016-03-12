@@ -10,19 +10,25 @@ namespace Taskever.Startup
 {
     public class TaskeverDataModule : AbpModule
     {
-        public override void PreInitialize(IAbpInitializationContext initializationContext)
+        public override void PreInitialize(/*IAbpInitializationContext initializationContext*/)
         {
-            base.PreInitialize(initializationContext);
+            base.PreInitialize(/*initializationContext*/);
             var connStr = ConfigurationManager.ConnectionStrings["Taskever"].ConnectionString;
+                
+            //this.IocManager.IocContainer.GetChildContainer
+
+            
+            // TODO: FIX
             initializationContext.GetModule<AbpNHibernateModule>().Configuration
                 .Database(MsSqlConfiguration.MsSql2008.ConnectionString(connStr))
                 .Mappings(m => m.FluentMappings.AddFromAssembly(Assembly.GetExecutingAssembly()));
         }
 
-        public override void Initialize(IAbpInitializationContext initializationContext)
+        public override void Initialize(/*IAbpInitializationContext initializationContext*/)
         {
-            base.Initialize(initializationContext);
-            IocManager.Instance.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
+            base.Initialize(/*initializationContext*/);
+            // IocManager.Instance.
+            Configuration.IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
         }
     }
 }

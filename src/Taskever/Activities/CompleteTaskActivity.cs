@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Security.Users;
 using Taskever.Tasks;
 
 namespace Taskever.Activities
@@ -9,12 +7,12 @@ namespace Taskever.Activities
 
         public CompleteTaskActivity()
         {
-            //ActivityType = ActivityType.CompleteTask;            
+            // ActivityType = ActivityType.CompleteTask;            
         }
 
         public override long?[] GetActors()
         {
-            return new[] { (long?)AssignedUser.Id };
+            return new[] { (long?)AssignedUserId };
         }
 
         public override long?[] GetRelatedUsers()

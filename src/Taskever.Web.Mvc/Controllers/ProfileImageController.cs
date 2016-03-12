@@ -1,11 +1,12 @@
 using System;
 using System.IO;
 using System.Web.Mvc;
+
+using Abp.Authorization;
 using Abp.IO;
-using Abp.Users;
 using Abp.Users.Dto;
 using Abp.Web.Models;
-using Abp.Web.Mvc.Authorization;
+
 using Taskever.Users;
 
 namespace Taskever.Web.Mvc.Controllers
@@ -58,7 +59,7 @@ namespace Taskever.Web.Mvc.Controllers
 
         private string GenerateProfileImagePath(string fileExtension)
         {
-            var userId = Abp.Security.Users.AbpUser.CurrentUserId;
+            var userId = Taskever.Security.Users.TaskeverUser.CurrentUserId;
             return Path.Combine(Server.MapPath("~/ProfileImages"), userId + "_" + DateTime.Now.Ticks + fileExtension);
         }
     }

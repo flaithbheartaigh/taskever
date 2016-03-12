@@ -1,4 +1,4 @@
-using Abp.Security.Users;
+using Abp.Authorization.Users;
 using Taskever.Friendships;
 
 namespace Taskever.Security.Users
@@ -12,7 +12,7 @@ namespace Taskever.Security.Users
             _friendshipDomainService = friendshipDomainService;
         }
 
-        public bool CanSeeProfile(AbpUser requesterUser, AbpUser targetUser)
+        public bool CanSeeProfile(TaskeverUser requesterUser, TaskeverUser targetUser)
         {
             return requesterUser.Id == targetUser.Id || _friendshipDomainService.HasFriendship(requesterUser, targetUser);
         }

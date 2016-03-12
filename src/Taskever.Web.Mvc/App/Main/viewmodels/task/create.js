@@ -35,6 +35,7 @@
             // Public methods /////////////////////////////////////////////////////
 
             that.canActivate = function () {
+                // debugger;
                 return friendshipService.getFriendships({
                     userId: _currentUser.id(),
                     status: taskever.friendshipStatus.Accepted,

@@ -1,10 +1,11 @@
 ﻿using Abp.Domain.Policies;
-using Abp.Security.Users;
+using Abp.Authorization.Users;
+using Taskever.Security.Users;
 
 namespace Taskever.Security.Users
 {
     public interface ITaskeverUserPolicy : IPolicy
     {
-        bool CanSeeProfile(AbpUser requesterUser, AbpUser targetUser);
+        bool CanSeeProfile(TaskeverUser requesterUser, TaskeverUser targetUser);
     }
 }

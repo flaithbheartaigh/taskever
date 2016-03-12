@@ -1,32 +1,28 @@
-using System;
 using System.Reflection;
+
 using Abp.Dependency;
-using Abp.Domain.Repositories.EntityFramework;
 using Abp.Modules;
-using Abp.Modules.Core.Startup;
-using Abp.Startup;
-using Castle.MicroKernel.Registration;
-using Taskever.Infrastructure.EntityFramework.Data.Repositories.NHibernate;
-using Taskever.Tasks;
+using Abp.Zero.EntityFramework;
+
+using Taskever.Startup;
 
 namespace Taskever.Infrastructure.EntityFramework.Startup
 {
+    [DependsOn(typeof(AbpZeroEntityFrameworkModule), typeof(TaskeverCoreModule))]
     public class TaskeverDataModule : AbpModule
     {
-        public override Type[] GetDependedModules()
+        public override void PreInitialize()
         {
-            return new[]
-                   {
-                       typeof (AbpModulesCoreInfrastructureEntityFrameworkModule)
-                   };
+            base.PreInitialize();
+
+            Configuration.DefaultNameOrConnectionString = "Default";
         }
 
-        public override void Initialize(IAbpInitializationContext initializationContext)
+        public override void Initialize()
         {
-            base.Initialize(initializationContext);
-            //IocManager.Instance.IocContainer.Register(Component.For<AbpDbContext>().ImplementedBy<TaskeverDbContext>().LifestyleTransient());
-            IocManager.Instance.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
-            //AbpDbContext.AddEntityAssembly(Assembly.GetAssembly(typeof(Task)));
+            base.Initialize();
+
+            IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
         }
     }
 }

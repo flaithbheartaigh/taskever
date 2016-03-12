@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<localizationDictionary culture="en">
+  <texts>
+    <text name="HomePage" value="Home page" />
+    <text name="About" value="About" />
+
+  </texts>
+</localizationDictionary>
+<!--
+  DisplayName:	Display name
+  HelloWorld:	Hello World!
+  Login	Login
+  MyFriends	My friends
+  MyTasks	My tasks
+  Password	Password
+  SeeAllFriends	See all friends
+  SeeAllTasks	See all tasks
+  SenderAddress	Sender address
+  ServerAddress	Server address
+  ServerPort	Server port
+  TaskPriority_AboveNormal	Above Normal
+  TaskPriority_BelowNormal	Below Normal
+  TaskPriority_High	High
+  TaskPriority_Low	Low
+  TaskPriority_Normal	Normal
+  TaskPrivacy_Private	Private
+  TaskPrivacy_Protected	Protected
+  TaskState_Completed	Completed
+  TaskState_New	New
+  TaskState_WorkingOn	WorkingOn
+  UserName	User nama
+-->

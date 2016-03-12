@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Domain.Entities.Auditing;
-using Abp.Security.Users;
+using Abp.Authorization.Users;
 using Taskever.Security.Users;
 using Taskever.Tasks;
 
@@ -20,7 +20,7 @@ namespace Taskever.Activities
 
         public override long?[] GetActors()
         {
-            return new long?[] { CreatorUser.Id, AssignedUser.Id };
+            return new long?[] { CreatorUserId, AssignedUserId };
         }
 
         public override long?[] GetRelatedUsers()

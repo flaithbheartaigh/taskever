@@ -2,10 +2,11 @@ using System;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
-using Abp.Domain.Uow;
+
+using Abp.Domain.Repositories;
 using Abp.Mapping;
-using Abp.Security.Users;
 using Abp.UI;
+
 using Taskever.Friendships.Dto;
 using Taskever.Security.Users;
 using Taskever.Utils.Mail;
@@ -14,13 +15,13 @@ namespace Taskever.Friendships
 {
     public class FriendshipAppService : IFriendshipAppService
     {
-        private readonly ITaskeverUserRepository _taskeverUserRepository;
+        private readonly IRepository<TaskeverUser, long> _taskeverUserRepository;
         private readonly IFriendshipRepository _friendshipRepository;
         private readonly IEmailService _emailService;
         private readonly IFriendshipPolicy _friendshipPolicy;
 
         public FriendshipAppService(
-            ITaskeverUserRepository taskeverUserRepository, 
+            IRepository<TaskeverUser, long> taskeverUserRepository, 
             IFriendshipRepository friendshipRepository, 
             IFriendshipPolicy friendshipPolicy, 
             IEmailService emailService)
@@ -42,7 +43,7 @@ namespace Taskever.Friendships
         {
             var friendships =
                 _friendshipRepository
-                    .GetAllWithFriendUser(AbpUser.CurrentUserId.Value)
+                    .GetAllWithFriendUser(TaskeverUser.CurrentUserId.Value)
                     .Where(f => f.Status == FriendshipStatus.Accepted)
                     .OrderByDescending(friendship => friendship.LastVisitTime)
                     .Take(input.MaxResultCount)
@@ -53,7 +54,7 @@ namespace Taskever.Friendships
 
         public virtual void ChangeFriendshipProperties(ChangeFriendshipPropertiesInput input)
         {
-            var currentUser = _taskeverUserRepository.Load(AbpUser.CurrentUserId.Value);
+            var currentUser = _taskeverUserRepository.Load(TaskeverUser.CurrentUserId.Value);
             var friendShip = _friendshipRepository.Get(input.Id); //TODO: Call FirstOrDefault and throw a specific exception?
 
             if (!_friendshipPolicy.CanChangeFriendshipProperties(currentUser, friendShip))
@@ -62,7 +63,6 @@ namespace Taskever.Friendships
             }
 
             //TODO: Implement mappings using Auto mapper!
-
             if (input.CanAssignTask.HasValue)
             {
                 friendShip.CanAssignTask = input.CanAssignTask.Value;
@@ -82,7 +82,7 @@ namespace Taskever.Friendships
                 throw new UserFriendlyException("Can not find a user with email address: " + input.EmailAddress);
             }
 
-            var currentUser = _taskeverUserRepository.Load(AbpUser.CurrentUserId.Value);
+            var currentUser = _taskeverUserRepository.Load(TaskeverUser.CurrentUserId.Value);
 
             //Check if they are already friends
             var friendship = _friendshipRepository.GetOrNull(currentUser.Id, friendUser.Id);
@@ -107,7 +107,7 @@ namespace Taskever.Friendships
 
         public virtual void RemoveFriendship(RemoveFriendshipInput input)
         {
-            var currentUser = _taskeverUserRepository.Load(AbpUser.CurrentUserId.Value);
+            var currentUser = _taskeverUserRepository.Load(TaskeverUser.CurrentUserId.Value);
             var friendship = _friendshipRepository.Get(input.Id); //TODO: Call FirstOrDefault and throw a specific exception?
 
             if (!_friendshipPolicy.CanRemoveFriendship(currentUser, friendship)) //TODO: Maybe this method can throw exception!
@@ -121,7 +121,7 @@ namespace Taskever.Friendships
         public virtual void AcceptFriendship(AcceptFriendshipInput input)
         {
             var friendship = _friendshipRepository.Get(input.Id); //TODO: Call FirstOrDefault and throw a specific exception?
-            var currentUser = _taskeverUserRepository.Load(AbpUser.CurrentUserId.Value);
+            var currentUser = _taskeverUserRepository.Load(TaskeverUser.CurrentUserId.Value);
             friendship.AcceptBy(currentUser);
             SendAcceptEmail(friendship.Pair);
         }
@@ -138,7 +138,7 @@ namespace Taskever.Friendships
 
         public void UpdateLastVisitTime(UpdateLastVisitTimeInput input)
         {
-            var friendship = _friendshipRepository.GetOrNull(AbpUser.CurrentUserId.Value, input.FriendUserId);
+            var friendship = _friendshipRepository.GetOrNull(TaskeverUser.CurrentUserId.Value, input.FriendUserId);
             if (friendship != null)
             {
                 friendship.LastVisitTime = DateTime.Now;

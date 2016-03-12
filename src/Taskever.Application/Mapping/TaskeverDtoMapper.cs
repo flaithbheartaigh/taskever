@@ -1,4 +1,7 @@
-﻿using Taskever.Activities;
+﻿using Abp.Mapping;
+using Abp.Users.Dto;
+
+using Taskever.Activities;
 using Taskever.Activities.Dto;
 using Taskever.Friendships;
 using Taskever.Friendships.Dto;
@@ -11,19 +14,55 @@ namespace Taskever.Mapping
     {
         public static void Map()
         {
-            //TODO: Check unnecessary ReverseMaps
-            AutoMapper.Mapper.CreateMap<Task, TaskDto>().ReverseMap();
-            AutoMapper.Mapper.CreateMap<Task, TaskWithAssignedUserDto>().ReverseMap();
-            AutoMapper.Mapper.CreateMap<Friendship, FriendshipDto>().ReverseMap();
+            AutoMapExtensions.Configure(
+                c =>
+                {
+                    // Original Code
+                    //AutoMapper.Mapper.Configuration
+                    //    .CreateMap<Activity, ActivityDto>()
+                    //    .Include<CreateTaskActivity, CreateTaskActivityDto>()
+                    //    .Include<CompleteTaskActivity, CompleteTaskActivityDto>();
+                    //
+                    // With Type check in OnModelCreating on the Activity Type
 
-            AutoMapper.Mapper
-                .CreateMap<Activity, ActivityDto>()
-                .Include<CreateTaskActivity, CreateTaskActivityDto>()
-                .Include<CompleteTaskActivity, CompleteTaskActivityDto>();
-            AutoMapper.Mapper.CreateMap<CreateTaskActivity, CreateTaskActivityDto>().ForMember(t => t.ActivityType, tt => tt.UseValue(1));
-            AutoMapper.Mapper.CreateMap<CompleteTaskActivity, CompleteTaskActivityDto>().ForMember(t => t.ActivityType, tt => tt.UseValue(2));
+                    c.CreateMap<Task, TaskDto>().ReverseMap();
+                    c.CreateMap<Task, TaskWithAssignedUserDto>().ReverseMap();
+                    c.CreateMap<Friendship, FriendshipDto>().ReverseMap();
 
-            AutoMapper.Mapper.CreateMap<UserFollowedActivity, UserFollowedActivityDto>();
+                    c.CreateMap<CreateTaskActivity, ActivityDto>()
+                        .ConstructUsing(
+                            (CreateTaskActivity x) => 
+                            {
+                                CreateTaskActivityDto dto = new CreateTaskActivityDto();
+                                dto.ActivityType = ActivityType.CreateTask;
+                                dto.Task = x.Task.MapTo<TaskDto>();
+                                dto.CreatorUser = x.CreatorUser.MapTo<UserDto>();
+                                dto.AssignedUser = x.AssignedUser.MapTo<UserDto>();
+                                dto.Id = x.Id;
+                                dto.CreationTime = x.CreationTime;
+
+                                return dto; 
+                            }
+                        );
+
+                    c.CreateMap<CompleteTaskActivity, ActivityDto>()
+                        .ConstructUsing(
+                            (CompleteTaskActivity x) =>
+                            {
+                                CompleteTaskActivityDto dto = new CompleteTaskActivityDto();
+                                dto.ActivityType = ActivityType.CreateTask;
+                                dto.Task = x.Task.MapTo<TaskDto>();
+                                dto.AssignedUser = x.AssignedUser.MapTo<UserDto>();
+                                dto.Id = x.Id;
+                                dto.CreationTime = x.CreationTime;
+
+                                return dto;
+                            }
+                        );
+
+                    c.CreateMap<UserFollowedActivity, UserFollowedActivityDto>();
+                }
+            );
         }
     }
 }

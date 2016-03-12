@@ -15,12 +15,12 @@
             <div class="form-group">
                 <input type="password" maxlength="30" name="Password" class="form-control" id="LoginPassword" placeholder="Password" required>
             </div>
-@*            <div class="checkbox">
+            <div class="checkbox">
                 <label>
                     <input type="checkbox" name="RememberMe" value="true">
                     Remember me
                 </label>
-            </div>*@
+            </div>
             <button type="submit" class="btn btn-primary">Login</button>
             <a id="ForgotPasswordLink" href="#" class="pull-right">Forgot your password?</a>
         </form>
@@ -47,4 +47,25 @@
             </div>
         </div>
     </form>
+</div>
+
+<div class="modal fade" id="LoginErrorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   
+         <div class="modal-dialog" style="width: 320px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Login Error</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <p id="LoginErrorMessage"></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="LoginErrorModalSubmitButton" type="button" class="btn btn-primary">Close</button>
+                </div>
+            </div>
+        </div>
+
 </div>

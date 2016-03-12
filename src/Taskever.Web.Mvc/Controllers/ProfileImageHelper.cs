@@ -1,3 +1,4 @@
+using Abp.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,9 +41,9 @@ namespace Taskever.Web.Mvc.Controllers
 
                 return userImageFileName;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //TODO: Log?
+                LogHelper.Logger.Warn("Error creating profile image.", ex);
                 return null;
             }
         }

@@ -40,7 +40,7 @@
                     });
                 });
 
-                $('#FriendshipTabs a[href=#' + _urlArgs.activeSection + ']').tab('show');
+                $('#FriendshipTabs a[href="#' + _urlArgs.activeSection + '"]').tab('show');
 
                 //TODO: DRY for codes below!
 

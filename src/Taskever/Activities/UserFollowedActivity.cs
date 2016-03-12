@@ -1,13 +1,18 @@
 ﻿using System;
+
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
-using Abp.Security.Users;
+
+using Abp.Authorization.Users;
+using Taskever.Security.Users;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Taskever.Activities
 {
+    [Table("AppUserFollowedActivities")]
     public class UserFollowedActivity : Entity<long>, IHasCreationTime
     {
-        public virtual AbpUser User { get; set; }
+        public virtual TaskeverUser User { get; set; }
 
         public virtual Activity Activity { get; set; }
 

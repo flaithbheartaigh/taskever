@@ -64,7 +64,7 @@
                     });
                 });
 
-                $('#UserViewTabs a[href=#' + _urlArgs.activeSection + ']').tab('show');
+                $('#UserViewTabs a[href="#' + _urlArgs.activeSection + '"]').tab('show');
             };
         };
 

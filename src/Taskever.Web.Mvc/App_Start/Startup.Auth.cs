@@ -3,6 +3,10 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
 
+using Taskever.Web.Mvc;
+
+[assembly: OwinStartup(typeof(Startup))]
+
 namespace Taskever.Web.Mvc
 {
     public partial class Startup

@@ -19,6 +19,7 @@
             // Public methods /////////////////////////////////////////////////////
 
             that.canActivate = function (taskId) {
+                // debugger;
                 if (taskId) {
                     that.task = ko.mapping.fromJS({});
                     that.isEditMode(true);
@@ -57,8 +58,9 @@
                             });
                         });
                     });
-                } else {
-                    
+                }
+                else
+                {    
                     that.task = {
                         title: ko.observable(),
                         description: ko.observable(),

@@ -1,4 +1,6 @@
-using Abp.Security.Users;
+using Abp.Authorization.Users;
+
+using Taskever.Security.Users;
 using Taskever.Friendships;
 
 namespace Taskever.Tasks
@@ -14,13 +16,13 @@ namespace Taskever.Tasks
             _friendshipRepository = friendshipRepository;
         }
 
-        public bool CanSeeTasksOfUser(AbpUser requesterUser, AbpUser userOfTasks)
+        public bool CanSeeTasksOfUser(TaskeverUser requesterUser, TaskeverUser userOfTasks)
         {
             return requesterUser.Id == userOfTasks.Id ||
                    _friendshipDomainService.HasFriendship(requesterUser, userOfTasks);
         }
 
-        public bool CanAssignTask(AbpUser assignerUser, AbpUser userToAssign)
+        public bool CanAssignTask(TaskeverUser assignerUser, TaskeverUser userToAssign)
         {
             if (assignerUser.Id == userToAssign.Id) //TODO: Override == to be able to write just assignerUser == userToAssign
             {
@@ -36,12 +38,12 @@ namespace Taskever.Tasks
             return friendship.CanAssignTask;
         }
 
-        public bool CanUpdateTask(AbpUser user, Task task)
+        public bool CanUpdateTask(TaskeverUser user, Task task)
         {
             return (task.CreatorUserId == user.Id) || (task.AssignedUser.Id == user.Id);
         }
 
-        public bool CanDeleteTask(AbpUser user, Task task)
+        public bool CanDeleteTask(TaskeverUser user, Task task)
         {
             return (task.CreatorUserId == user.Id) || (task.AssignedUser.Id == user.Id);
         }

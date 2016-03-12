@@ -26,7 +26,7 @@
                     $(this).tab('show');
                 });
 
-                $('#SettingTabs a[href=#UserProfileImageEdit]').tab('show');
+                $('#SettingTabs a[href="#UserProfileImageEdit"]').tab('show');
             };
 
             that.updatePassword = function () {

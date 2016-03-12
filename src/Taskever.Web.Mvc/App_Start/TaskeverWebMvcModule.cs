@@ -3,32 +3,44 @@ using System.Reflection;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+
+using Abp.Authorization.Users;
 using Abp.Dependency;
+using Abp.Domain.Repositories;
+using Abp.Logging;
 using Abp.Modules;
-using Abp.Startup;
-using Abp.Utils.Extensions;
+using Abp.Web.Mvc;
 using Abp.Web.Mvc.Resources;
+
+using Castle.Core.Logging;
+
+using Taskever.Activities;
+using Taskever.Infrastructure.EntityFramework.Startup;
+using Taskever.Security.Roles;
+using Taskever.Security.Users;
 using Taskever.Startup;
 using Taskever.Tasks;
+using Taskever.Web.Startup;
 
 namespace Taskever.Web.Mvc
 {
+    [DependsOn(typeof(TaskeverDataModule), typeof(TaskeverAppModule), typeof(TaskeverWebApiModule), typeof(AbpWebMvcModule))]
     public class TaskeverWebMvcModule : AbpModule
     {
-        public override Type[] GetDependedModules()
+        ILogger logger;
+
+        public override void PreInitialize()
         {
-            return new[]
-                   {
-                       typeof (TaskeverDataModule)
-                   };
+            base.PreInitialize();
         }
 
-        public override void Initialize(IAbpInitializationContext initializationContext)
+        public override void Initialize()
         {
-            base.Initialize(initializationContext);
-            IocManager.Instance.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
+            IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
 
+            // TODO: Check into this
             WebResourceHelper.ExposeEmbeddedResources("Taskever/Er/Test", typeof(TaskAppService).Assembly, "Taskever.Test");
+            // WebResourceHelper.ExposeEmbeddedResources("Taskever/Er/Test", typeof(TaskAppService).Assembly, "Taskever.Test");
 
             AreaRegistration.RegisterAllAreas();
             BundleConfig.RegisterBundles(BundleTable.Bundles);

@@ -2,11 +2,12 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
-using Abp.Security.Users;
+using Abp.Authorization.Users;
 using Taskever.Security.Users;
 
 namespace Taskever.Friendships
 {
+    [Table("AppFriendships")]
     public class Friendship : Entity, IHasCreationTime
     {
         [ForeignKey("UserId")]

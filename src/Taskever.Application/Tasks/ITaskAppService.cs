@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services;
+using System.Threading.Tasks;
 using Taskever.Tasks.Dto;
 
 namespace Taskever.Tasks
@@ -12,6 +13,7 @@ namespace Taskever.Tasks
         GetTasksByImportanceOutput GetTasksByImportance(GetTasksByImportanceInput input);
 
         CreateTaskOutput CreateTask(CreateTaskInput input);
+        Task<CreateTaskOutput> CreateTaskAsync(CreateTaskInput input);
 
         void UpdateTask(UpdateTaskInput input);
 

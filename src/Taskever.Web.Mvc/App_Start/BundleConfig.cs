@@ -17,6 +17,7 @@ namespace Taskever.Web.Mvc
                     .Include("~/Content/font-awesome.min.css", new CssRewriteUrlTransform())
                     .Include("~/Content/durandal.css", new CssRewriteUrlTransform())
                     .Include("~/Content/toastr.min.css", new CssRewriteUrlTransform())
+                    .Include("~/Scripts/sweetalert/sweet-alert.css", new CssRewriteUrlTransform())
                     .Include("~/App/_Common/styles/main.css", new CssRewriteUrlTransform())
                     .Include("~/Abp/Framework/styles/abp.css", new CssRewriteUrlTransform())
                 );
@@ -31,20 +32,27 @@ namespace Taskever.Web.Mvc
                     .Include("~/Scripts/modernizr-{version}.js") //TODO: Use minimized
                 );
 
+            // TODO: minify! in bundle??
             bundles.Add(
                 new ScriptBundle("~/Scripts/baselibs")
-                    .Include("~/Scripts/json2.min.js")
-                    .Include("~/Scripts/jquery-2.1.1.min.js") //TODO: Use with {version} and minimized
-                    .Include("~/Scripts/underscore.min.js")
-                    .Include("~/Scripts/knockout-3.2.0.js") //TODO: Use with {version} and minimized
+                    .Include(
+                        "~/Abp/Framework/scripts/utils/ie10fix.js"
+                    ).Include("~/Scripts/json2.js")
+                    .Include("~/Scripts/jquery-2.2.0.js") //TODO: Use with {version} and minimized
+                    .Include("~/Scripts/underscore.js")
+                    .Include("~/Scripts/knockout-3.4.0.js") //TODO: Use with {version} and minimized
                     .Include("~/Scripts/knockout.mapping-latest.js")
-                    .Include("~/Scripts/bootstrap.min.js")
-                    .Include("~/Scripts/jquery.validate.min.js")
-                    .Include("~/Scripts/jquery.form.min.js")
-                    .Include("~/Scripts/jquery.blockUI.min.js")
-                    .Include("~/Scripts/moment-with-locales.min.js")
-                    .Include("~/Scripts/libs/livestamp/livestamp.min.js")
-                    .Include("~/Scripts/toastr.min.js")
+                    .Include("~/Scripts/bootstrap.js")
+                    .Include("~/Scripts/jquery.validate.js")
+                    .Include("~/Scripts/jquery.form.js")
+                    
+                    .Include("~/Scripts/jquery.blockUI.js")
+                    .Include("~/Scripts/moment-with-locales.js")
+                    .Include("~/Scripts/libs/livestamp/livestamp.js")
+                    
+                    .Include("~/Scripts/sweetalert/sweet-alert.js")
+                    .Include("~/Scripts/toastr.js")
+                    
                 );
 
             bundles.Add(
@@ -54,8 +62,9 @@ namespace Taskever.Web.Mvc
                     .Include("~/abp/framework/scripts/libs/abp.jquery.js")
                     .Include("~/abp/framework/scripts/libs/abp.toastr.js")
                     .Include("~/abp/framework/scripts/libs/abp.blockUI.js")
+                    .Include("~/abp/framework/scripts/libs/abp.sweet-alert.js")
                     .Include("~/abp/framework/scripts/libs/abp.spin.js")
-                );
+            );
 
             bundles.Add(
                 new ScriptBundle("~/Scripts/taskever")
