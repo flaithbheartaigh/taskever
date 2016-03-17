@@ -1,8 +1,12 @@
-﻿define(["jquery"], function ($) {
+﻿
+// define(['durandal/app', 'session', 'service!taskever/userActivity'], function (app, session, userActivityService) {
 
-    $(function () {
+define(["jquery", 'durandal/app', 'service!taskever/user'], function ($, app, userService) {
+//    define(["jquery"], function ($) {
 
-        //Login form
+        $(function () {
+
+            //Login form
         $("#LoginForm").validate({
             rules: {
                 Password: {
@@ -11,12 +15,9 @@
             }
         });
 
-
-
         $("#LoginForm").abpAjaxForm({
             blockUI: '#LoginFormPanelBody',
-            error: function(a,b,c,d,e,f,g,h,i,j,k)
-            {
+            error: function (a, b, c, d, e, f, g, h, i, j, k) {
                 // todo: pass correct error message to client from server
                 $('#LoginErrorModal').modal('show');
                 $('#LoginErrorMessage').text("Your email address or password is incorrect, please try again.");
@@ -56,14 +57,30 @@
         $('#ForgotPasswordLink').click(function () {
             $('#PasswordResetLinkModal').modal('show');
         });
-        
+
         $('#PasswordResetLinkModalSubmitButton').click(function () {
-            abp.ajax({
-                url: abp.appPath + 'Account/SendPasswordResetLink',
-                data: JSON.stringify({ emailAddress: $('#PasswordResetEmailAddress').val() })
-            }).done(function () {
+            $("#PasswordResetErrorMessage").text("");
+
+            userService.sendPasswordResetLink({
+                emailAddress: $('#PasswordResetEmailAddress').val()
+            }).done(function (data) {
+                debugger;
                 $('#PasswordResetLinkModal').modal('hide');
+            }).fail(function (error) {
+                // debugger;
+                $("#PasswordResetErrorMessage").text(error.message);
+                // abp.message.error(error.message, "Error");
             });
+
+            //abp.ajax({
+            //    url: abp.appPath + 'Account/SendPasswordResetLink',
+            //    data: JSON.stringify({ emailAddress: $('#PasswordResetEmailAddress').val() })
+            //}).done(function () {
+            //    $('#PasswordResetLinkModal').modal('hide');
+            //}).fail(function (args, title, message) {
+            //    $("#PasswordResetErrorMessage").text(message);
+            //    abp.message.error(message, title);
+            //});
         });
 
         $('.taskever-screen-preview-image').fancybox();
@@ -72,7 +89,7 @@
             $('#LoginErrorModal').modal('hide');
 
             $("#LoginPassword").val("");
-            $("#LoginEmailAddress").click();  
+            $("#LoginEmailAddress").click();
         });
     });
 

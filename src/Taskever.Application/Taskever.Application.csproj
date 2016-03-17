@@ -155,7 +155,7 @@
     <Compile Include="Friendships\Dto\UpdateLastVisitTimeInput.cs" />
     <Compile Include="Users\TaskeverUserAppService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Startup\TaskeverAppModule.cs" />
+    <Compile Include="TaskeverAppModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Development\DebugSources\ABP\src\Abp\Abp.csproj">

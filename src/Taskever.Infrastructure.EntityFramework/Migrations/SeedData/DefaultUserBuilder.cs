@@ -1,11 +1,14 @@
-﻿using Abp.Authorization.Users;
-using Abp.Domain.Uow;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Abp.Authorization.Users;
+using Abp.Domain.Uow;
+
+using Taskever.Infrastructure.EntityFramework.Data;
 using Taskever.Infrastructure.EntityFramework.Data.Repositories;
 using Taskever.Security.MultiTenancy;
 using Taskever.Security.Roles;
@@ -24,9 +27,6 @@ namespace Taskever.Infrastructure.EntityFramework.Migrations.SeedData
 
         public void Build()
         {
-            //if (!System.Diagnostics.Debugger.IsAttached)
-            //    System.Diagnostics.Debugger.Break();
-
             CreateTennantUserAndRoles();
             // CreateUserAndRoles();
         }

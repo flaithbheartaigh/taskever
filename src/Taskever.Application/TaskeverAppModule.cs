@@ -5,7 +5,7 @@ using Abp.Modules;
 
 using Taskever.Mapping;
 
-namespace Taskever.Startup
+namespace Taskever
 {
     [DependsOn(typeof(TaskeverCoreModule))]
     public class TaskeverAppModule : AbpModule

@@ -15,12 +15,11 @@ using Abp.Web.Mvc.Resources;
 using Castle.Core.Logging;
 
 using Taskever.Activities;
-using Taskever.Infrastructure.EntityFramework.Startup;
+using Taskever.Infrastructure.EntityFramework;
 using Taskever.Security.Roles;
 using Taskever.Security.Users;
-using Taskever.Startup;
+
 using Taskever.Tasks;
-using Taskever.Web.Startup;
 
 namespace Taskever.Web.Mvc
 {

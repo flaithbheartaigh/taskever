@@ -5,19 +5,20 @@ using System.Linq;
 
 using EntityFramework.DynamicFilters;
 
+using Taskever.Infrastructure.EntityFramework.Data;
 using Taskever.Infrastructure.EntityFramework.Migrations.SeedData;
 
 
 namespace Taskever.Infrastructure.EntityFramework.Migrations
 {
-    internal sealed class Configuration : DbMigrationsConfiguration<Taskever.Infrastructure.EntityFramework.Data.Repositories.TaskeverDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<TaskeverDbContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(Taskever.Infrastructure.EntityFramework.Data.Repositories.TaskeverDbContext context)
+        protected override void Seed(TaskeverDbContext context)
         {
             context.DisableAllFilters();
 

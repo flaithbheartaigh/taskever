@@ -1,11 +1,12 @@
 ﻿using System.Web.Mvc;
 using Abp.Authorization;
+using Abp.Web.Mvc.Authorization;
 
 namespace Taskever.Web.Mvc.Controllers
 {
-    [AbpAuthorize]
     public class HomeController : TaskeverController
     {
+        [AbpMvcAuthorize]
         public ActionResult Index()
         {
             return View("Index");

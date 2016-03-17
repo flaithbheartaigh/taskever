@@ -13,10 +13,12 @@ using Taskever.Friendships;
 using Taskever.Security.Users;
 using Taskever.Users.Dto;
 using Taskever.Utils.Mail;
+using Abp.Application.Services;
+using Abp.Web.Models;
 
 namespace Taskever.Users
 {
-    public class TaskeverUserAppService : ITaskeverUserAppService
+    public class TaskeverUserAppService : ApplicationService, ITaskeverUserAppService
     {
         private readonly IRepository<TaskeverUser, long> _userRepository;
         private readonly IEmailService _emailService;
@@ -130,6 +132,8 @@ namespace Taskever.Users
             currentUser.Password = new PasswordHasher().HashPassword(currentUser.Password);
         }
 
+		//TODO: Test again
+        [WrapResult]
         public void SendPasswordResetLink(SendPasswordResetLinkInput input)
         {
             var user = _userRepository.FirstOrDefault(u => u.EmailAddress == input.EmailAddress);

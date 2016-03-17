@@ -21,6 +21,7 @@ using Recaptcha.Web.Mvc;
 using Taskever.Security.Users;
 using Taskever.Users;
 using Taskever.Web.Mvc.Models.Account;
+using Abp.Web.Mvc.Authorization;
 
 
 namespace Taskever.Web.Mvc.Controllers
@@ -158,7 +159,7 @@ namespace Taskever.Web.Mvc.Controllers
             return RedirectToAction("Login", new { loginMessage = "Congratulations! Your account is activated. Enter your email address and password to login" });
         }
 
-        [AbpAuthorize]
+        [AbpMvcAuthorize]
         public virtual ActionResult Logout()
         {
             AuthenticationManager.SignOut();
@@ -234,7 +235,7 @@ namespace Taskever.Web.Mvc.Controllers
             return Json(new MvcAjaxResponse { TargetUrl = Url.Action("Login") });
         }
 
-        [Authorize, DisableAuditing]
+        [AbpMvcAuthorize, DisableAuditing]
         public JsonResult KeepSessionOpen()
         {
             return Json(new MvcAjaxResponse());

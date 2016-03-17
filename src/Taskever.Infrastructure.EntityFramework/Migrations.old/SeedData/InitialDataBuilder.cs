@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Taskever.Infrastructure.EntityFramework.Data;
-using Taskever.Infrastructure.EntityFramework.Data.Repositories;
+using Taskever.Infrastructure.EntityFramework.Data.Repositories.NHibernate;
 
 namespace Taskever.Infrastructure.EntityFramework.Migrations.SeedData
 {

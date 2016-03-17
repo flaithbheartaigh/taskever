@@ -79,9 +79,17 @@
                     }
                 } else if (data.success === false) {
                     var messagePromise = null;
-
+                    debugger;
                     if (data.error) {
-                        messagePromise = abp.ajax.showError(data.error);
+
+                        // todo: remove sweet-alert && implement custom system
+						//			if the promise has a fail then do not call
+						//			the default showError
+                        //var defaultMessage = $dfd && !$dfd.fail;
+                        //if (defaultMessage)
+                        //{
+                        //    messagePromise = abp.ajax.showError(data.error);
+                        //}
                     } else {
                         data.error = abp.ajax.defaultError;
                     }

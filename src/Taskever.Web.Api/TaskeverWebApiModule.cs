@@ -6,11 +6,11 @@ using Abp.WebApi.Controllers.Dynamic.Builders;
 
 using Taskever.Activities;
 using Taskever.Friendships;
-using Taskever.Startup;
+
 using Taskever.Tasks;
 using Taskever.Users;
 
-namespace Taskever.Web.Startup
+namespace Taskever.Web
 {
     [DependsOn(typeof(AbpWebApiModule), typeof(TaskeverAppModule))]
     public class TaskeverWebApiModule : AbpModule

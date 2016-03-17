@@ -18,7 +18,7 @@ using Taskever.Security.Roles;
 using Taskever.Security.Users;
 using Taskever.Utils.Mail;
 
-namespace Taskever.Startup
+namespace Taskever
 {
     [DependsOn(typeof(AbpZeroCoreModule))] 
     public class TaskeverCoreModule : AbpModule
