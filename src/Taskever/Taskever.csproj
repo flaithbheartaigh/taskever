@@ -33,8 +33,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Abp, Version=0.7.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Abp.0.7.8.0\lib\net452\Abp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Abp.EntityFramework, Version=0.7.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Abp.EntityFramework.0.7.8.0\lib\net452\Abp.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Abp.Zero, Version=0.7.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Abp.Zero.0.7.7.0\lib\net452\Abp.Zero.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
+      <HintPath>..\packages\Castle.Core.3.3.0\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Castle.Facilities.Logging, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
@@ -43,6 +55,18 @@
     </Reference>
     <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.DynamicFilters, Version=1.4.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.DynamicFilters.1.4.6\lib\net40\EntityFramework.DynamicFilters.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -142,9 +166,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Localization\Resources\AppTexts.resx">
@@ -152,16 +174,6 @@
       <LastGenOutput>AppTexts.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Development\DebugSources\ABP\src\Abp\Abp.csproj">
-      <Project>{2c221d3b-5f54-4c5b-8082-318636415132}</Project>
-      <Name>Abp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Development\DebugSources\module-zero\src\Abp.Zero\Abp.Zero.csproj">
-      <Project>{70d916f2-9bff-43da-b3f7-3e0655114d48}</Project>
-      <Name>Abp.Zero</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Localization\Source\Taskever.xml" />
